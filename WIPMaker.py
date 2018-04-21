@@ -11,7 +11,7 @@ class Application(Tk):
         self.file_observer = None
         self.play_image = PhotoImage(file = "images/playimage.png") 
         self.pause_image = PhotoImage(file = "images/pauseimage.png") 
-        self.file_is_set = False
+        self.icon = PhotoImage(file = "images/icon.png") 
         self.setupLayout()
     def setupLayout(self):
         screen_width = self.winfo_screenwidth()
@@ -19,25 +19,27 @@ class Application(Tk):
         self.width = 300
         self.height = screen_height
 
-        self.minsize(width=self.width, height=400)
-        self.maxsize(width=screen_width, height=screen_height)
+        self.minsize(width = self.width, height = 570)
+        self.maxsize(width = 600, height = screen_height)
 
         self.geometry("%dx%d+%d+%d" % (self.width, self.height, screen_width - self.width, 0))
         self.protocol("WM_DELETE_WINDOW", self.windowClosing)
+        self.tk.call('wm', 'iconphoto', self._w, self.icon)
+        self.title("WIPMaker") 
 
         self['bg'] = "#3a99d9"
         title_label = Label(self, text = "WIPMaker", bg = "#3a99d9", fg = "#ecf0f1", font= "MSSansSerif 15")
         title_label.pack(fill = X, pady = 50)
 
-        mid_pane = Frame(self, bg = "#ecf0f1")
-        mid_pane.pack(fill = X, padx = 10, pady = 10)
-
-        self.play_button = Button(mid_pane, width = 110, height = 110, highlightthickness = 0, bd = 0, bg = "#ecf0f1")       
+        self.mid_pane = Frame(self, bg = "#ecf0f1", width = self.width)
+        self.mid_pane.pack(fill = X, padx = 10, pady = 10)
+      
+        self.play_button = Button(self.mid_pane, width = 110, height = 110, highlightthickness = 0, bd = 0, bg = "#ecf0f1")       
         self.play_button.config(image = self.play_image)
         self.play_button.pack(padx = 20, pady = 20)
         self.play_button['state'] = 'disabled'
 
-        self.pick_file_label = Label(mid_pane, 
+        self.pick_file_label = Label(self.mid_pane, 
             text = "Click here to select the target file", 
             bg = "#ecf0f1",
             fg = "#3a99d9", 
@@ -45,7 +47,7 @@ class Application(Tk):
         self.pick_file_label.pack(padx = 20, pady = (10, 50))
         self.pick_file_label.bind("<Button-1>", self.pickImage)
 
-        self.scale_time_seconds = Scale(mid_pane, 
+        self.scale_time_seconds = Scale(self.mid_pane, 
             label = "SECONDS",
             from_ = 3, 
             to = 60, 
@@ -58,7 +60,7 @@ class Application(Tk):
         self.scale_time_seconds.pack(fill = X, padx = 20, pady = 20)
         self.scale_time_seconds.set(15)
 
-        self.scale_time_minutes = Scale(mid_pane, 
+        self.scale_time_minutes = Scale(self.mid_pane, 
             label = "MINUTES",
             from_ = 0, 
             to = 60, 
