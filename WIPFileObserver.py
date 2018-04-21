@@ -3,11 +3,12 @@ from FileWrapper import FileWrapper
 from threading import Event, Thread
 
 class WIPFileObserver(Thread):
-    def __init__(self, file_name):
+    def __init__(self, file_name, offset_time = 2):
         super().__init__()
         self.file_name = file_name
         self.wip_directory = file_name + ".wip"
         self.running = False
+        self.offset_time = offset_time
         if not os.path.isfile(file_name):
             return None
         if not os.path.isdir(self.wip_directory):
@@ -42,4 +43,4 @@ class WIPFileObserver(Thread):
             if variation: 
                 self.variationFound(current_file)
                 self.target_file = current_file
-            self.time_event.wait(2)
+            self.time_event.wait(self.offset_time)
