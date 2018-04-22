@@ -14,6 +14,7 @@ class Application(Tk):
         self.play_image = PhotoImage(file = "images/playimage.png") 
         self.pause_image = PhotoImage(file = "images/pauseimage.png") 
         self.icon = PhotoImage(file = "images/icon.png") 
+        self.ok_icon = PhotoImage(file = "images/ok.png") 
         self.setupLayout()
     def setupLayout(self):
         screen_width = self.winfo_screenwidth()
@@ -30,8 +31,12 @@ class Application(Tk):
         self.title("WIPMaker") 
 
         self['bg'] = "#3a99d9"
-        title_label = Label(self, text = "WIPMaker", bg = "#3a99d9", fg = "#ecf0f1", font= "MSSansSerif 15 bold")
-        title_label.pack(fill = X, pady = 40)
+        title_label = Label(self, 
+            text = "WIPMaker", 
+            bg = "#3a99d9", 
+            fg = "#ecf0f1", 
+            font= "MSSansSerif 15 bold")
+        title_label.pack(fill = X, pady = 30)
 
         self.mid_pane = Frame(self, bg = "#ecf0f1", width = self.width)
         self.mid_pane.pack(fill = X, padx = 10, pady = 10)
@@ -43,7 +48,8 @@ class Application(Tk):
             bd = 0, 
             bg = "#ecf0f1",
             activebackground = "#ecf0f1",
-            cursor="arrow")       
+            cursor="arrow",
+            relief=SUNKEN)       
         self.play_button.config(image = self.play_image)
         self.play_button.pack(padx = 20, pady = 20)
         self.play_button['state'] = 'disabled'
@@ -52,12 +58,25 @@ class Application(Tk):
             text = "Click here to select the target file", 
             bg = "#ecf0f1",
             fg = "#3a99d9", 
-            font= "MSSansSerif 12",
-            cursor="hand1")
-        self.pick_file_label.pack(padx = 20, pady = (10, 50))
+            font= "MSSansSerif 11",
+            cursor = "hand1",
+            compound = RIGHT)
+        self.pick_file_label.pack(padx = 20, pady = (10, 70))
         self.pick_file_label.bind("<Button-1>", self.pickImage)
 
+        info_time_frame = Frame(self.mid_pane,
+            bg = "#ecf0f1")
+        info_time_frame.pack(fill = X)
+        info_time_label = Label(info_time_frame,
+            font= "MSSansSerif 10 bold",
+            text = "Waiting Time: ",
+            bg = "#ecf0f1", 
+            fg = "#5F7999"
+        )
+        info_time_label.pack(side = LEFT, padx = 20)
+
         self.scale_time_seconds = Scale(self.mid_pane, 
+            font= "MSSansSerif 8",
             label = "SECONDS",
             from_ = 3, 
             to = 60, 
@@ -66,12 +85,13 @@ class Application(Tk):
             fg = "#3a99d9", 
             bd = 0, 
             highlightthickness = 0, 
-            troughcolor = "#3DB0E5",
+            troughcolor = "#81B3F1",
             cursor="hand1")
-        self.scale_time_seconds.pack(fill = X, padx = 20, pady = 20)
+        self.scale_time_seconds.pack(fill = X, padx = 20, pady = 15)
         self.scale_time_seconds.set(15)
 
-        self.scale_time_minutes = Scale(self.mid_pane, 
+        self.scale_time_minutes = Scale(self.mid_pane,
+            font= "MSSansSerif 8", 
             label = "MINUTES",
             from_ = 0, 
             to = 60, 
@@ -80,9 +100,9 @@ class Application(Tk):
             fg = "#3a99d9", 
             bd = 0, 
             highlightthickness = 0, 
-            troughcolor = "#3DB0E5",
+            troughcolor = "#81B3F1",
             cursor="hand1")
-        self.scale_time_minutes.pack(fill = X, padx = 20, pady = 20, ipady = 10)
+        self.scale_time_minutes.pack(fill = X, padx = 20, ipady = 10)
         self.scale_time_minutes.set(0)
 
         self.make_wip_button = Button(self.mid_pane, 
@@ -100,10 +120,12 @@ class Application(Tk):
         self.make_wip_button['state'] = 'disabled'
         
     def pickImage(self, event):
-        file_name = askopenfilename(initialdir = os.path.abspath(__file__), title="Select the target file")
+        file_name = askopenfilename(initialdir = os.path.abspath(__file__), title="Select the target file ")
         if type(file_name) == tuple or file_name == "":
             return
-        self.pick_file_label['text'] = file_name.split("/")[-1] + " selected"
+        rel_file_name = file_name.split("/")[-1]
+        self.pick_file_label['text'] = ("..." if len(rel_file_name) > 16 else "") + rel_file_name[-16:] + " selected"
+        self.pick_file_label['image'] = self.ok_icon
         self.play_button['state'] = 'normal'
         self.make_wip_button['state'] = 'normal'
         self.play_button.bind("<Button-1>", self.playObserver)
