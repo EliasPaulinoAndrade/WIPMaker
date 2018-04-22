@@ -3,6 +3,7 @@ from FileWrapper import FileWrapper
 from threading import Event, Thread
 
 class WIPFileObserver(Thread):
+    #create the wip folder if the file exist, the time_event helps the loop to stop during the wait()
     def __init__(self, file_name, offset_time = 2):
         super().__init__()
         self.file_name = file_name
@@ -16,23 +17,30 @@ class WIPFileObserver(Thread):
         
         self.target_file = FileWrapper.openFile(file_name)
         self.time_event = Event()
+
+    #it's called if the file have changed since the last seen, the new file is copied to the wip folder
     def variationFound(self, file):
         md5 = self.generateMD5ByFile(file)
         current_date = datetime.datetime.now().strftime("%S%M%H%d%m%y") 
         new_file_path = self.wip_directory + "/wip_" + current_date + "_" + md5 + "_" + self.file_name.split("/")[-1]
         print(new_file_path)
         file.copyToPath(new_file_path)
+
+    #generate the md5 by the file lines as string
     def generateMD5ByFile(self, file):
         md5 = hashlib.md5()
         file_string = file.toByteString()
         md5.update(file_string)
-        
         return md5.hexdigest()
+
+    #stop the wait setting the event, and running is false, the observer is dead
     def stop(self):
         self.running = False
         self.time_event.set()
     def run(self):
         self.observerLoop()
+        
+    #it check the file variance from time to time, the off set time is a wait on the thread. 
     def observerLoop(self):
         current_file = None
         variation = None

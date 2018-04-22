@@ -16,6 +16,8 @@ class Application(Tk):
         self.icon = PhotoImage(file = "images/icon.png") 
         self.ok_icon = PhotoImage(file = "images/ok.png") 
         self.setupLayout()
+        
+    #create the window elements
     def setupLayout(self):
         screen_width = self.winfo_screenwidth()
         screen_height = self.winfo_screenheight()
@@ -51,7 +53,7 @@ class Application(Tk):
             cursor="arrow",
             relief=SUNKEN)       
         self.play_button.config(image = self.play_image)
-        self.play_button.pack(padx = 20, pady = 20)
+        self.play_button.pack(padx = 20, pady = (50, 20))
         self.play_button['state'] = 'disabled'
 
         self.pick_file_label = Label(self.mid_pane, 
@@ -118,7 +120,8 @@ class Application(Tk):
         )
         self.make_wip_button.pack(ipadx = 10, ipady = 10, pady = 20, padx = 20, side = LEFT)
         self.make_wip_button['state'] = 'disabled'
-        
+
+    #called when the pick image label is called, open a dialog and create the file observer and wip folder
     def pickImage(self, event):
         file_name = askopenfilename(initialdir = os.path.abspath(__file__), title="Select the target file ")
         if type(file_name) == tuple or file_name == "":
@@ -133,7 +136,8 @@ class Application(Tk):
         self.play_button["cursor"] = "hand1"
         self.make_wip_button["cursor"] = "hand1"
         self.file_observer = WIPFileObserver(file_name)
-
+    
+    #called when play or pause is cliked, it starts or stops the observer loop, once its stopped, a new is created
     def playObserver(self, event):
         if self.file_observer.running:
             self.pick_file_label["cursor"] = "hand1"
@@ -155,6 +159,7 @@ class Application(Tk):
             self.play_button['image'] = self.pause_image
             self.pick_file_label['state'] = 'disabled'
             self.pick_file_label.unbind("<Button-1>")
+    #called on make wip button click, asks the folder to save the gif, and save it
     def makeWIP(self, event):
         gif_path = asksaveasfilename(
             initialdir =  '/'.join(self.file_observer.file_name.split("/")[0:-1]), 
@@ -167,6 +172,7 @@ class Application(Tk):
         images_names = FileWrapper.readFilesNameFromDirectory(wip_directory, pattern = "wip_*")
         self.gif = GIFWrapper(images_names)
         self.gif.makeGIF(gif_path)
+
     def windowClosing(self):
         if self.file_observer == None:
             self.destroy()
@@ -175,4 +181,6 @@ class Application(Tk):
             self.file_observer.stop()
             self.play_button['image'] = self.play_image
         self.destroy()
-Application().mainloop()
+
+app = Application()
+app.mainloop()
