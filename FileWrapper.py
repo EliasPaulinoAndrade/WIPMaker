@@ -1,13 +1,18 @@
 import os, sys, fnmatch
 from PIL import Image
 
+'''
+it contains some functions to manage files, how read it lines, the file names from folder, 
+and copy to other folder
+'''
 class FileWrapper:
     def __init__(self, file):
         self.file = file
         self.file_lines = FileWrapper.fileToList(self.file)
         self.file_str = None
+
+    #compare two files by comparing the lines
     def __eq__(self, other):
-        '''compare two files by comparing the lines'''
         if len(self) != len(other):
             return False
         for lineIndex in range(len(self)): 

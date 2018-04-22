@@ -2,6 +2,11 @@ import time, os, hashlib, datetime
 from FileWrapper import FileWrapper
 from threading import Event, Thread
 
+'''
+It's responsible for look at a file and save a copy of this file when it changes. The observer is a thread, the
+loop have a blocked time done with a Event and wait. when a file is changed, the copy is saved with name of 
+concatenation of: date + md5 by the file + old name. 
+'''
 class WIPFileObserver(Thread):
     #create the wip folder if the file exist, the time_event helps the loop to stop during the wait()
     def __init__(self, file_name, offset_time = 2):
@@ -39,7 +44,7 @@ class WIPFileObserver(Thread):
         self.time_event.set()
     def run(self):
         self.observerLoop()
-        
+
     #it check the file variance from time to time, the off set time is a wait on the thread. 
     def observerLoop(self):
         current_file = None

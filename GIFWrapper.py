@@ -21,7 +21,7 @@ class GIFWrapper:
         for image in self:
             image_files.append(imageio.imread(image))
         imageio.mimsave(path, image_files)
-        
+
     #the sort key is the date in the file name
     def sortKey(item):
         str_date = item.split("_")[1]
